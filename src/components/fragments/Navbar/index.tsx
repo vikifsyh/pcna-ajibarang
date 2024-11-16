@@ -64,7 +64,7 @@ export default function Navbar() {
             }`}
             href="/tentang"
           >
-            <InformationCircleIcon className="w-5 h-5 text-primary-500" />
+            <InformationCircleIcon className="w-5 h-5 text-primary-500 mr-3" />
             Tentang
           </Link>
           <Link
@@ -73,7 +73,7 @@ export default function Navbar() {
             }`}
             href="/unduhan"
           >
-            <ArrowDownOnSquareIcon className="w-5 h-5 text-primary-500" />
+            <ArrowDownOnSquareIcon className="w-5 h-5 mr-3 text-primary-500" />
             Unduhan
           </Link>
           <Link
@@ -82,7 +82,7 @@ export default function Navbar() {
             }`}
             href="/berita"
           >
-            <DocumentTextIcon className="w-5 h-5 text-primary-500" />
+            <DocumentTextIcon className="w-5 h-5 text-primary-500 mr-3" />
             Berita
           </Link>
           <Link
@@ -91,7 +91,7 @@ export default function Navbar() {
             }`}
             href="/program"
           >
-            <CalendarDateRangeIcon className="w-5 h-5 text-primary-500" />
+            <CalendarDateRangeIcon className="w-5 h-5 text-primary-500 mr-3" />
             Program
           </Link>
           <Link
@@ -100,7 +100,7 @@ export default function Navbar() {
             }`}
             href={"https://nasyiah.or.id/Ktna"}
           >
-            <UserPlusIcon className="w-5 h-5 text-primary-500" />
+            <UserPlusIcon className="w-5 h-5 text-primary-500 mr-3" />
             Daftar KTAN
           </Link>
         </div>
@@ -126,7 +126,7 @@ export default function Navbar() {
               <li>
                 <Link
                   href="/"
-                  className="px-3 py-2 w-full inline-flex rounded-[3px] text-green-500 hover:text-green-500/80 hover:bg-green-500/40 transition duration-200 ease-in"
+                  className="px-3 py-2 w-full inline-flex  rounded-[3px] text-green-500 hover:text-green-500/80 hover:bg-green-500/40 transition duration-200 ease-in"
                 >
                   <HomeIcon className="w-5 h-5 text-green-500 mr-3" />
                   Beranda

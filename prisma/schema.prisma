@@ -29,5 +29,13 @@ model Article {
     image           String?   @db.Text
 }
 
+model Download {
+    id              String    @id @default(cuid())
+    name            String?    @db.Text
+    file            String?    @db.Text
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+}
+
 
 
