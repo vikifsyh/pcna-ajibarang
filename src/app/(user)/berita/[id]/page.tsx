@@ -72,7 +72,7 @@ export default function ArticleDetail() {
   };
 
   return (
-    <div className="mx-5 md:mx-20">
+    <div className="mx-5 md:mx-20 my-28">
       {/* Kolom Utama (Detail Artikel) */}
       <div className="">
         <Link
@@ -125,7 +125,7 @@ export default function ArticleDetail() {
                     <div>
                       <Link
                         href={`/berita/${recommendation.id}`}
-                        className="font-medium text-blue-600 hover:underline"
+                        className="font-medium hover:underline"
                       >
                         {recommendation.title}
                       </Link>
@@ -138,7 +138,7 @@ export default function ArticleDetail() {
                         )}
                       </p>
                     </div>
-                    <button className="inline-flex items-center text-base font-medium px-3 py-2 border rounded-md">
+                    <button className="inline-flex items-center text-base font-medium px-3 py-2 border border-primary text-primary rounded-md hover:bg-primary hover:text-white">
                       Baca berita <ArrowRightIcon className="ml-2 h-4 w-4" />
                     </button>
                   </div>

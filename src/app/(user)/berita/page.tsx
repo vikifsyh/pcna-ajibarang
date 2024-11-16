@@ -47,13 +47,13 @@ export default function Articles() {
         <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
         <div className="h-6 bg-gray-200 rounded w-full mb-2"></div>
         <div className="h-6 bg-gray-200 rounded w-5/6 mb-4"></div>
-        <div className="h-8 bg-blue-200 rounded w-1/2"></div>
+        <div className="h-8 bg-primary/50 rounded w-1/2"></div>
       </div>
     </div>
   );
 
   return (
-    <div className="mx-5 md:mx-20">
+    <div className="mx-5 md:mx-20 my-28">
       <div className="text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-4">
           PCNA Ajibarang News
@@ -66,7 +66,7 @@ export default function Articles() {
 
       {error && <p className="text-red-500">{error}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 md:mt-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 md:mt-16">
         {loading
           ? Array.from({ length: 6 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -99,7 +99,7 @@ export default function Articles() {
                   </p>
                   <Link
                     href={`/berita/${article.id}`}
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 mt-10"
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary/50 focus:ring-4 focus:outline-none focus:ring-primary/60 mt-10"
                   >
                     Baca Selengkapnya
                     <ArrowRightIcon className="w-4 h-4 ml-2" />
