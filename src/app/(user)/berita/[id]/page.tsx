@@ -72,7 +72,7 @@ export default function ArticleDetail() {
   };
 
   return (
-    <div className="mx-5 md:mx-20 my-28">
+    <div className="mx-5 md:mx-20 my-28 bg-white">
       {/* Kolom Utama (Detail Artikel) */}
       <div className="">
         <Link

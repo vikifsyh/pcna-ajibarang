@@ -6,19 +6,14 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
   return (
     <html lang="en">
-      <body className={jakarta.className}>
-  
-        {children}
-      </body>
+      <body className={`${jakarta.className} bg-white`}>{children}</body>
     </html>
   );
 }

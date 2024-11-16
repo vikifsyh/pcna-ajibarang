@@ -58,7 +58,6 @@ export default function Articles() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-4">
           PCNA Ajibarang News
         </h1>
-
         <p className="text-gray-600 mb-2 md:mb-4">
           Berita terkini tentang PCNA Ajibarang.
         </p>
@@ -74,18 +73,19 @@ export default function Articles() {
           : articles.map((article) => (
               <div
                 key={article.id}
-                className="max-w-sm bg-white border border-gray-200 rounded-lg"
+                className="max-w-sm bg-white border border-gray-200 rounded-lg flex flex-col"
               >
-                <div className="w-full">
+                <div className="w-full h-[240px] relative">
                   <Image
                     className="rounded-t-lg object-cover"
-                    width={1000}
-                    height={1000}
+                    layout="fill"
+                    width={0}
+                    height={0}
                     src={article.image}
                     alt={article.title}
                   />
                 </div>
-                <div className="p-5">
+                <div className="p-5 flex flex-col flex-grow">
                   <p className="text-sm text-gray-600">
                     {formatDistanceToNow(new Date(article.createdAt), {
                       addSuffix: true,
@@ -97,13 +97,15 @@ export default function Articles() {
                   <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
                     {article.content}
                   </p>
-                  <Link
-                    href={`/berita/${article.id}`}
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary/50 focus:ring-4 focus:outline-none focus:ring-primary/60 mt-10"
-                  >
-                    Baca Selengkapnya
-                    <ArrowRightIcon className="w-4 h-4 ml-2" />
-                  </Link>
+                  <div className="mt-auto">
+                    <Link
+                      href={`/berita/${article.id}`}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary/50 focus:ring-4 focus:outline-none focus:ring-primary/60"
+                    >
+                      Baca Selengkapnya
+                      <ArrowRightIcon className="w-4 h-4 ml-2" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

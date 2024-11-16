@@ -7,7 +7,7 @@ export default function UserLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-white">
         <Navbar />
         {children}
       </body>
