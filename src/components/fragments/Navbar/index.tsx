@@ -113,7 +113,7 @@ export default function Navbar() {
             onClick={toggleMobileMenu}
           >
             <span className="sr-only">Open main menu</span>
-            <Bars3Icon className="w-6 h-6" aria-hidden="true" />
+            <Bars3Icon className="w-6 h-6" />
           </button>
         </div>
         <div

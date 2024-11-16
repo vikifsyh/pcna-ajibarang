@@ -1,5 +1,4 @@
 import "./globals.css";
-import Navbar from "@/components/fragments/Navbar";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -17,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={jakarta.className}>
-        <Navbar/>
+  
         {children}
       </body>
     </html>
