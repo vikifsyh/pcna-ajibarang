@@ -219,7 +219,7 @@ export default function ManageBerita() {
                     <td className="px-4 py-2">
                       {new Date(article.createdAt).toLocaleDateString("id-ID")}
                     </td>
-                    <td className="px-4 py-2 space-x-1">
+                    <td className="px-4 py-2 space-x-0 space-y-1 md:space-y-0 md:space-x-1">
                       <button
                         onClick={() => handleEdit(article)}
                         className="bg-primary px-3 py-2 text-white rounded-md"

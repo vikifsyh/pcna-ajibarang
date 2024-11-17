@@ -108,7 +108,7 @@ export default function ArticleDetail() {
           {/* Kolom Kanan (Artikel Rekomendasi) */}
           <div className="mt-10 md:mt-4 max-w-lg">
             <h3 className="text-lg font-bold mb-4">Baca berita lainnya</h3>
-            <div className="">
+            <div className="space-y-4">
               {recommendations.map((recommendation) => (
                 <div
                   key={recommendation.id}

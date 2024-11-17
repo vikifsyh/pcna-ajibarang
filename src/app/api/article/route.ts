@@ -195,6 +195,117 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
+// export async function PUT(req: NextRequest) {
+//   const { searchParams } = new URL(req.url);
+//   const id = searchParams.get("id");
+
+//   if (!id) {
+//     return NextResponse.json(
+//       { error: "ID must be provided." },
+//       { status: 400 }
+//     );
+//   }
+
+//   const formData = await req.formData();
+//   const title = (formData.get("title") as string) || null;
+//   const content = (formData.get("content") as string) || null;
+//   const image = (formData.get("image") as File) || null;
+
+//   let imageUrl: string | null = null;
+
+//   // If a new image is provided, process the image
+//   if (image) {
+//     const buffer = Buffer.from(await image.arrayBuffer());
+//     const relativeUploadDir = `/uploads/${new Date(Date.now())
+//       .toLocaleDateString("id-ID", {
+//         day: "2-digit",
+//         month: "2-digit",
+//         year: "numeric",
+//       })
+//       .replace(/\//g, "-")}`;
+
+//     const uploadDir = join(process.cwd(), "public", relativeUploadDir);
+
+//     try {
+//       await stat(uploadDir);
+//     } catch (e: any) {
+//       if (e.code === "ENOENT") {
+//         await mkdir(uploadDir, { recursive: true });
+//       } else {
+//         console.error(
+//           "Error while trying to create directory when uploading a file\n",
+//           e
+//         );
+//         return NextResponse.json(
+//           { error: "Something went wrong." },
+//           { status: 500 }
+//         );
+//       }
+//     }
+
+//     try {
+//       const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+//       const filename = `${image.name.replace(
+//         /\.[^/.]+$/,
+//         ""
+//       )}-${uniqueSuffix}.${mime.getExtension(image.type)}`;
+//       await writeFile(`${uploadDir}/${filename}`, buffer);
+//       imageUrl = `${relativeUploadDir}/${filename}`;
+//     } catch (e) {
+//       console.error("Error while trying to upload a file\n", e);
+//       return NextResponse.json(
+//         { error: "Something went wrong while uploading the image." },
+//         { status: 500 }
+//       );
+//     }
+//   }
+
+//   try {
+//     // Update the article in the database
+//     const updatedArticle = await prisma.article.update({
+//       where: { id },
+//       data: {
+//         title: title || undefined,
+//         content: content || undefined,
+//         image: imageUrl || undefined, // If no image, it remains the same
+//       },
+//     });
+
+//     return NextResponse.json({
+//       message: "Article updated successfully",
+//       article: updatedArticle,
+//     });
+//   } catch (error) {
+//     console.error("Error while updating the article:", error);
+//     return NextResponse.json(
+//       { error: "Failed to update the article." },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "image" },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    // Pipe buffer ke uploadStream
+    const stream = require("stream");
+    const readableStream = new stream.Readable();
+    readableStream.push(buffer);
+    readableStream.push(null);
+    readableStream.pipe(uploadStream);
+  });
+};
+
 export async function PUT(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
@@ -213,61 +324,32 @@ export async function PUT(req: NextRequest) {
 
   let imageUrl: string | null = null;
 
-  // If a new image is provided, process the image
+  // Jika ada gambar baru, unggah ke Cloudinary
   if (image) {
-    const buffer = Buffer.from(await image.arrayBuffer());
-    const relativeUploadDir = `/uploads/${new Date(Date.now())
-      .toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "-")}`;
-
-    const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
     try {
-      await stat(uploadDir);
-    } catch (e: any) {
-      if (e.code === "ENOENT") {
-        await mkdir(uploadDir, { recursive: true });
-      } else {
-        console.error(
-          "Error while trying to create directory when uploading a file\n",
-          e
-        );
-        return NextResponse.json(
-          { error: "Something went wrong." },
-          { status: 500 }
-        );
-      }
-    }
-
-    try {
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      const filename = `${image.name.replace(
-        /\.[^/.]+$/,
-        ""
-      )}-${uniqueSuffix}.${mime.getExtension(image.type)}`;
-      await writeFile(`${uploadDir}/${filename}`, buffer);
-      imageUrl = `${relativeUploadDir}/${filename}`;
+      const buffer = Buffer.from(await image.arrayBuffer());
+      const uploadResponse = await uploadToCloudinary(
+        buffer,
+        "uploads/articles"
+      );
+      imageUrl = uploadResponse.secure_url; // Mendapatkan URL aman dari Cloudinary
     } catch (e) {
-      console.error("Error while trying to upload a file\n", e);
+      console.error("Error uploading to Cloudinary:", e);
       return NextResponse.json(
-        { error: "Something went wrong while uploading the image." },
+        { error: "Failed to upload the image." },
         { status: 500 }
       );
     }
   }
 
   try {
-    // Update the article in the database
+    // Update artikel di database
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
         title: title || undefined,
         content: content || undefined,
-        image: imageUrl || undefined, // If no image, it remains the same
+        image: imageUrl || undefined, // Jika tidak ada gambar, tetap seperti semula
       },
     });
 
