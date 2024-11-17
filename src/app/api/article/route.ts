@@ -27,11 +27,13 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await image.arrayBuffer());
 
-    // Upload stream to Cloudinary
     const uploadStream = () =>
       new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "image" },
+          {
+            folder: "articles", // Folder di Cloudinary
+            resource_type: "image",
+          },
           (error, result) => {
             if (error) return reject(error);
             resolve(result);
@@ -42,10 +44,17 @@ export async function POST(req: NextRequest) {
 
     const result = (await uploadStream()) as any;
 
-    // Save the result (image URL) in the database
-    const fileUrl = result.secure_url;
+    if (!result || !result.secure_url) {
+      console.error("Cloudinary upload failed:", result);
+      return NextResponse.json(
+        { error: "Image upload failed" },
+        { status: 500 }
+      );
+    }
 
-    // Simpan URL di database (prisma example)
+    const fileUrl = result.secure_url;
+    console.log("Uploaded image URL:", fileUrl);
+
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
 
@@ -213,7 +222,6 @@ export async function PUT(req: NextRequest) {
 
   let imageUrl: string | null = null;
 
-  
   if (image) {
     const buffer = Buffer.from(await image.arrayBuffer());
     const relativeUploadDir = `/uploads/${new Date(Date.now())
@@ -261,13 +269,12 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
         title: title || undefined,
         content: content || undefined,
-        image: imageUrl || undefined, 
+        image: imageUrl || undefined,
       },
     });
 
@@ -283,5 +290,3 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-
-
