@@ -36,9 +36,12 @@ export default function ManageBerita() {
   const fetchArticles = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/article`,
+        {
+          method: "GET",
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setArticles(data.articles || []);
@@ -66,10 +69,13 @@ export default function ManageBerita() {
     formData.append("image", image);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/article`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         toast.success("Berita berhasil ditambahkan!");
@@ -116,7 +122,7 @@ export default function ManageBerita() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}?id=${articleToEdit?.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/article?id=${articleToEdit?.id}`,
         {
           method: "PUT",
           body: formData,
@@ -151,7 +157,7 @@ export default function ManageBerita() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}?id=${articleToDelete}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/article?id=${articleToDelete}`,
         {
           method: "DELETE",
         }
