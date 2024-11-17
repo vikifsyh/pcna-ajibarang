@@ -37,7 +37,7 @@ export default function ManageBerita() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/article`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/article`,
         {
           method: "GET",
         }
