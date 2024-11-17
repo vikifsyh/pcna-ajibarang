@@ -125,7 +125,7 @@ export default function ArticleDetail() {
                     <div>
                       <Link
                         href={`/berita/${recommendation.id}`}
-                        className="font-medium hover:underline"
+                        className="font-medium hover:underline line-clamp-1"
                       >
                         {recommendation.title}
                       </Link>

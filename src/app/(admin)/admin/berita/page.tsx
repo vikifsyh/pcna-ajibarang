@@ -215,7 +215,11 @@ export default function ManageBerita() {
               {articles.length > 0 ? (
                 articles.map((article) => (
                   <tr key={article.id}>
-                    <td className="px-4 py-2">{article.title}</td>
+                    <td className="px-4 py-2">
+                      {article.title.split(" ").slice(0, 5).join(" ")}
+                      {article.title.split(" ").length > 5 ? "..." : ""}
+                    </td>
+
                     <td className="px-4 py-2">
                       {new Date(article.createdAt).toLocaleDateString("id-ID")}
                     </td>
