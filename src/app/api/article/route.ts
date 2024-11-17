@@ -245,64 +245,46 @@ export async function PUT(req: NextRequest) {
 
   let imageUrl: string | null = null;
 
-  // Jika ada gambar baru, upload gambar baru
+  // Jika ada gambar baru, upload ke Cloudinary
   if (image) {
     const buffer = Buffer.from(await image.arrayBuffer());
-    const relativeUploadDir = `/uploads/${new Date(Date.now())
-      .toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "-")}`;
 
-    const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
-    // Membuat direktori jika belum ada
-    try {
-      await stat(uploadDir);
-    } catch (e: any) {
-      if (e.code === "ENOENT") {
-        await mkdir(uploadDir, { recursive: true });
-      } else {
-        console.error(
-          "Error while trying to create directory when uploading a file\n",
-          e
+    // Upload ke Cloudinary
+    const uploadStream = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "image" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
         );
-        return NextResponse.json(
-          { error: "Something went wrong." },
-          { status: 500 }
-        );
-      }
-    }
+        streamifier.createReadStream(buffer).pipe(stream);
+      });
 
-    // Menyusun nama file dengan nama unik
     try {
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      const filename = `${image.name.replace(
-        /\.[^/.]+$/,
-        ""
-      )}-${uniqueSuffix}.${mime.getExtension(image.type)}`;
-
-      await writeFile(`${uploadDir}/${filename}`, buffer);
-      imageUrl = `${relativeUploadDir}/${filename}`;
+      const result = (await uploadStream()) as any;
+      imageUrl = result.secure_url; // Ambil URL gambar dari Cloudinary
     } catch (e) {
-      console.error("Error while trying to upload a file\n", e);
+      console.error("Error while uploading to Cloudinary:", e);
       return NextResponse.json(
-        { error: "Something went wrong while uploading the image." },
+        {
+          error:
+            "Something went wrong while uploading the image to Cloudinary.",
+        },
         { status: 500 }
       );
     }
   }
 
-  // Update artikel
+  // Update artikel dengan gambar baru
   try {
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
         title: title || undefined,
         content: content || undefined,
-        image: imageUrl || undefined, // Gunakan imageUrl jika ada gambar baru, jika tidak, biarkan nilai lama
+        image: imageUrl || undefined, // Gunakan URL gambar dari Cloudinary
       },
     });
 
