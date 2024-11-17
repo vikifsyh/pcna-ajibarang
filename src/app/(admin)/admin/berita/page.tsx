@@ -70,7 +70,7 @@ export default function ManageBerita() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/article`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/article`,
         {
           method: "POST",
           body: formData,
@@ -122,7 +122,7 @@ export default function ManageBerita() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/article?id=${articleToEdit?.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/article?id=${articleToEdit?.id}`,
         {
           method: "PUT",
           body: formData,
@@ -157,7 +157,7 @@ export default function ManageBerita() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/article?id=${articleToDelete}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/article?id=${articleToDelete}`,
         {
           method: "DELETE",
         }
