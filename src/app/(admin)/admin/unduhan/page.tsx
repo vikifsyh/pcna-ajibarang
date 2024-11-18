@@ -57,7 +57,7 @@ export default function ManageUnduhan() {
     e.preventDefault();
 
     if (!name || !file) {
-      alert("Harap lengkapi semua bidang.");
+      alert("Harap lengkapi semua form.");
       return;
     }
 
@@ -75,24 +75,24 @@ export default function ManageUnduhan() {
       );
 
       if (response.ok) {
-        toast.success("Unduhan berhasil ditambahkan!");
+        toast.success("Dokumen berhasil ditambahkan!");
         setIsModalOpen(false);
         setName("");
         setFile(null);
         fetchDownloads();
       } else {
-        toast.error("Gagal menambahkan unduhan.");
+        toast.error("Gagal menambahkan dokumen.");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Terjadi kesalahan saat menambahkan unduhan.");
+      toast.error("Terjadi kesalahan saat menambahkan dokkumen.");
     }
   };
 
   const handleEdit = (download: DownloadItem) => {
     setDownloadToEdit(download);
     setName(download.name);
-    setFile(null);
+    setFile(null); // Mengosongkan file yang lama
     setIsEditMode(true);
     setIsModalOpen(true);
   };
@@ -109,20 +109,20 @@ export default function ManageUnduhan() {
     formData.append("name", name);
 
     if (file) {
-      formData.append("file", file);
+      formData.append("file", file); // Menambahkan file baru jika ada
     }
 
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/unduhan?id=${downloadToEdit?.id}`,
         {
-          method: "PUT",
+          method: "PUT", // Menggunakan method PUT untuk update
           body: formData,
         }
       );
 
       if (response.ok) {
-        toast.success("Unduhan berhasil diperbarui!");
+        toast.success("Dokumen berhasil diperbarui!");
         setIsModalOpen(false);
         setName("");
         setFile(null);
@@ -130,11 +130,11 @@ export default function ManageUnduhan() {
         setIsEditMode(false);
         fetchDownloads();
       } else {
-        toast.error("Gagal memperbarui unduhan.");
+        toast.error("Gagal memperbarui Dokumen.");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Terjadi kesalahan saat memperbarui unduhan.");
+      toast.error("Terjadi kesalahan saat memperbarui dokumen.");
     }
   };
 
@@ -158,13 +158,13 @@ export default function ManageUnduhan() {
         );
         setIsConfirmDeleteModalOpen(false);
         setDownloadToDelete(null);
-        toast.success("Unduhan berhasil dihapus!");
+        toast.success("Dokumen berhasil dihapus!");
       } else {
-        toast.error("Gagal menghapus unduhan.");
+        toast.error("Gagal menghapus dokumen.");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Terjadi kesalahan saat menghapus unduhan.");
+      toast.error("Terjadi kesalahan saat menghapus dokumen.");
     }
   };
 
@@ -178,10 +178,10 @@ export default function ManageUnduhan() {
   }, []);
 
   return (
-    <div className="flex-1 p-4 sm:ml-72 sm:mr-10 my-10 rounded-lg bg-white h-screen">
+    <div className="flex-1 p-4 sm:ml-[270px] sm:mr-10 my-10 rounded-lg bg-white h-screen">
       <Breadcrumb />
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Kelola Unduhan</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">Kelola Dokumen</h1>
         <button
           onClick={toggleModal}
           className="px-4 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary/80 transition"
@@ -236,7 +236,7 @@ export default function ManageUnduhan() {
           </table>
         )}
       </div>
-      {/* Add/Edit Modal */}
+      {/* Modal Add/Edit */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -247,79 +247,77 @@ export default function ManageUnduhan() {
               <div className="mb-4">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-600"
                 >
-                  Nama
+                  Nama Unduhan
                 </label>
                 <input
                   type="text"
                   id="name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md"
-                  required
                 />
               </div>
               <div className="mb-4">
                 <label
                   htmlFor="file"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-600"
                 >
                   File
                 </label>
                 <input
                   type="file"
                   id="file"
-                  accept=".pdf,.docx,.xlsx,.zip"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   onChange={handleFileChange}
-                  className="mt-1"
-                  required={!isEditMode}
                 />
               </div>
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={toggleModal}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-md"
+                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary text-white rounded-md"
+                  className="px-4 py-2 bg-primary text-white rounded-lg"
                 >
-                  Simpan
+                  {isEditMode ? "Perbarui" : "Simpan"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-      {/* Delete Confirmation Modal */}
+
+      {/* Modal Delete Confirmation */}
       {isConfirmDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Konfirmasi Hapus</h2>
-            <p className="mb-4">
-              Apakah Anda yakin ingin menghapus unduhan ini?
-            </p>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={cancelDelete}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md"
-              >
-                Batal
-              </button>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">
+              Apakah Anda yakin ingin menghapus dokumen ini?
+            </h3>
+            <div className="flex justify-between">
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg"
               >
-                Hapus
+                Ya
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+              >
+                Tidak
               </button>
             </div>
           </div>
         </div>
       )}
+
       <ToastContainer />
     </div>
   );

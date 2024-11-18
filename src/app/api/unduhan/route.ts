@@ -1,6 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { join } from "path";
-import { mkdir, writeFile, stat } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import mime from "mime";
 import { v2 as cloudinary } from "cloudinary";
@@ -14,8 +12,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const UPLOAD_DIR = join(process.cwd(), "uploads"); // Direktori penyimpanan file lokal
-
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const name = (formData.get("name") as string) || null;
@@ -28,73 +24,47 @@ export async function POST(req: NextRequest) {
   // Tentukan tipe MIME file
   const fileType = mime.getType(file.name) || "application/octet-stream";
 
-  if (fileType === "application/pdf") {
-    try {
-      // Pastikan direktori upload tersedia
-      try {
-        await stat(UPLOAD_DIR);
-      } catch {
-        await mkdir(UPLOAD_DIR, { recursive: true });
-      }
+  // Upload file ke Cloudinary
+  const buffer = Buffer.from(await file.arrayBuffer());
 
-      const filePath = join(UPLOAD_DIR, file.name);
-      const buffer = Buffer.from(await file.arrayBuffer());
-
-      // Simpan file PDF ke lokal
-      await writeFile(filePath, buffer);
-
-      // Simpan informasi file ke database
-      const createdFile = await prisma.download.create({
-        data: {
-          file: filePath, // Path lokal
-          name,
-        },
-      });
-
-      return NextResponse.json({ file: createdFile });
-    } catch (e) {
-      console.error("Error while saving PDF locally:", e);
-      return NextResponse.json(
-        { error: "Failed to save PDF file locally." },
-        { status: 500 }
+  const uploadStream = () =>
+    new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: "raw" },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
       );
+      streamifier.createReadStream(buffer).pipe(stream);
+    });
+
+  try {
+    // Menunggu hasil upload stream ke Cloudinary
+    const result = (await uploadStream()) as any;
+
+    // Pastikan file URL yang diterima adalah URL yang valid
+    if (!result?.secure_url) {
+      throw new Error("Failed to get a valid URL from Cloudinary.");
     }
-  } else {
-    // Jika bukan PDF, upload ke Cloudinary
-    const buffer = Buffer.from(await file.arrayBuffer());
 
-    const uploadStream = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "auto" },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        );
-        streamifier.createReadStream(buffer).pipe(stream);
-      });
+    const fileUrl = result.secure_url; // Ambil URL yang benar dari hasil upload
 
-    try {
-      const result = (await uploadStream()) as any;
-      const fileUrl = result.secure_url;
+    // Simpan URL file dan nama ke database
+    const createdFile = await prisma.download.create({
+      data: {
+        file: fileUrl, // Menyimpan URL Cloudinary yang valid
+        name,
+      },
+    });
 
-      // Simpan URL file dan nama ke database
-      const createdFile = await prisma.download.create({
-        data: {
-          file: fileUrl, // URL Cloudinary
-          name,
-        },
-      });
-
-      return NextResponse.json({ file: createdFile });
-    } catch (e) {
-      console.error("Error while uploading to Cloudinary:", e);
-      return NextResponse.json(
-        { error: "Failed to upload file to Cloudinary." },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({ file: createdFile });
+  } catch (e) {
+    console.error("Error while uploading to Cloudinary:", e);
+    return NextResponse.json(
+      { error: "Failed to upload file to Cloudinary." },
+      { status: 500 }
+    );
   }
 }
 
@@ -137,52 +107,112 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
 
   if (!id) {
-    return NextResponse.json({ error: "ID is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "ID is required to delete the file." },
+      { status: 400 }
+    );
   }
 
   try {
-    // Cari data berdasarkan ID di database
-    const fileRecord = await prisma.download.findUnique({
+    // Cari file berdasarkan ID di database
+    const fileToDelete = await prisma.download.findUnique({
       where: { id },
     });
 
-    if (!fileRecord) {
+    if (!fileToDelete || !fileToDelete.file) {
+      return NextResponse.json(
+        { error: "File not found in the database." },
+        { status: 404 }
+      );
+    }
+
+    // Hapus file dari Cloudinary jika file tersebut ada di Cloudinary
+    const publicId = fileToDelete.file.split("/").pop()?.split(".")[0]; // Ambil public ID dari URL
+
+    if (publicId) {
+      await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    }
+
+    // Hapus data file dari database
+    await prisma.download.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "File successfully deleted." });
+  } catch (e) {
+    console.error("Error while deleting the file:", e);
+    return NextResponse.json(
+      { error: "Failed to delete file." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  const formData = await req.formData();
+  const name = (formData.get("name") as string) || null;
+  const file = formData.get("file") as File | null;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "ID is required to update the file." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Cari file berdasarkan ID di database
+    const fileToUpdate = await prisma.download.findUnique({
+      where: { id },
+    });
+
+    if (!fileToUpdate) {
       return NextResponse.json({ error: "File not found." }, { status: 404 });
     }
 
-    // Pengecekan jika fileRecord.file tidak ada atau null
-    if (!fileRecord.file) {
-      return NextResponse.json(
-        { error: "File URL is missing in the record." },
-        { status: 400 }
-      );
+    let fileUrl = fileToUpdate.file;
+
+    // Jika file baru diupload, unggah ke Cloudinary dan dapatkan URL baru
+    if (file) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+
+      const uploadStream = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { resource_type: "raw" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          streamifier.createReadStream(buffer).pipe(stream);
+        });
+
+      const result = (await uploadStream()) as any;
+
+      if (!result?.secure_url) {
+        throw new Error("Failed to upload file to Cloudinary.");
+      }
+
+      fileUrl = result.secure_url; // URL baru yang didapatkan dari Cloudinary
     }
 
-    // Ambil public_id dari Cloudinary yang ada di database
-    const filePublicId = fileRecord.file.split("/").pop()?.split(".")[0]; // Ambil public_id dari URL
+    // Perbarui data file di database
+    const updatedFile = await prisma.download.update({
+      where: { id },
+      data: {
+        file: fileUrl, // URL file yang baru
+        name, // Nama baru jika ada
+      },
+    });
 
-    if (filePublicId) {
-      // Hapus file dari Cloudinary
-      await cloudinary.uploader.destroy(filePublicId);
-
-      // Hapus data dari database
-      await prisma.download.delete({
-        where: { id },
-      });
-
-      return NextResponse.json({
-        message: "File and record deleted successfully.",
-      });
-    } else {
-      return NextResponse.json(
-        { error: "Invalid file format or missing public_id." },
-        { status: 400 }
-      );
-    }
-  } catch (error) {
-    console.error("Error while deleting the file:", error);
+    return NextResponse.json({ file: updatedFile });
+  } catch (e) {
+    console.error("Error while updating the file:", e);
     return NextResponse.json(
-      { error: "Failed to delete the file." },
+      { error: "Failed to update file." },
       { status: 500 }
     );
   }

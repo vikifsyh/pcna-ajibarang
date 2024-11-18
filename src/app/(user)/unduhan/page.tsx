@@ -1,24 +1,36 @@
 "use client";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+interface File {
+  id: string;
+  name: string;
+  file: string;
+}
+
 export default function Download() {
-  const [files, setFiles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // State untuk pencarian
-  const [filteredFiles, setFilteredFiles] = useState([]); // State untuk file yang difilter
+  const [files, setFiles] = useState<File[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredFiles, setFilteredFiles] = useState<File[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 5;
 
   useEffect(() => {
     fetchFiles();
   }, []);
 
   useEffect(() => {
-    // Filter file berdasarkan pencarian
+    // Filter files based on search term
     if (searchTerm.trim() === "") {
       setFilteredFiles(files);
     } else {
       setFilteredFiles(
-        files.filter((file: any) =>
+        files.filter((file) =>
           file.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
@@ -31,7 +43,7 @@ export default function Download() {
       const data = await response.json();
       if (response.ok) {
         setFiles(data.downloads || []);
-        setFilteredFiles(data.downloads || []); // Inisialisasi dengan semua file
+        setFilteredFiles(data.downloads || []); // Initialize with all files
       } else {
         console.error(data.error);
       }
@@ -41,8 +53,29 @@ export default function Download() {
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value); // Update nilai pencarian
+    setSearchTerm(event.target.value); // Update search term
   };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleGoButtonClick = () => {
+    const pageInput = document.getElementById("page-input") as HTMLInputElement;
+    const pageNumber = parseInt(pageInput.value, 10);
+    handlePageChange(pageNumber);
+  };
+
+  // Slice the files for the current page
+  const displayedFiles = filteredFiles.slice(
+    (currentPage - 1) * filesPerPage,
+    currentPage * filesPerPage
+  );
 
   return (
     <div className="mx-5 md:mx-20 my-28">
@@ -82,12 +115,15 @@ export default function Download() {
         </form>
       </div>
 
-      {filteredFiles.length > 0 ? (
-        <div className="border-b border-neutral-300 py-6 px-7 md:px-14 ">
-          {filteredFiles.map((file: any, index) => (
-            <div className="flex items-center justify-between" key={file.id}>
+      {displayedFiles.length > 0 ? (
+        <div>
+          {displayedFiles.map((file, index) => (
+            <div
+              className="border-b border-neutral-300 py-3 md:py-4 px-4 md:px-14 flex items-center justify-between"
+              key={file.id}
+            >
               <div className="flex gap-6 items-center">
-                <p>{index + 1}</p>
+                <p>{(currentPage - 1) * filesPerPage + index + 1}</p>
                 <p className="text-base text-gray-500">{file.name}</p>
               </div>
               <Link
@@ -105,6 +141,66 @@ export default function Download() {
           Tidak ada file yang sesuai dengan pencarian.
         </p>
       )}
+
+      {/* Pagination Controls */}
+      <nav
+        className="flex justify-between rounded-md shadow-sm mt-8"
+        aria-label="Pagination"
+      >
+        <div className="flex items-center gap-2">
+          <Link href="#" onClick={() => handlePageChange(currentPage - 1)}>
+            <p className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+              <span className="sr-only">Previous</span>
+              <ArrowLeftIcon className="w-4 h-4" />
+            </p>
+          </Link>
+
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Link
+              key={index + 1}
+              href="#"
+              onClick={() => handlePageChange(index + 1)}
+            >
+              <p
+                className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                  currentPage === index + 1
+                    ? "bg-primary text-white"
+                    : "text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                {index + 1}
+              </p>
+            </Link>
+          ))}
+
+          <Link href="#" onClick={() => handlePageChange(currentPage + 1)}>
+            <p className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+              <span className="sr-only">Next</span>
+              <ArrowRightIcon className="w-4 h-4" />
+            </p>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-5">
+          <label className="block mb-2 text-sm font-medium text-gray-900">
+            Pergi ke halaman
+          </label>
+          <input
+            type="number"
+            id="page-input"
+            min={1}
+            max={totalPages}
+            className="bg-gray-50 text-gray-900 text-sm rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 block w-12 h-10 p-2.5"
+            defaultValue={currentPage}
+          />
+          <button
+            onClick={handleGoButtonClick}
+            className="bg-primary rounded-lg px-4 py-2 text-white"
+          >
+            Pergi
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
