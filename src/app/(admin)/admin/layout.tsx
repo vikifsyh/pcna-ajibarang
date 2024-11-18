@@ -7,9 +7,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`flex items-center w-full bg-neutral-100`}>
-        <Sidebar />
-        {children}
+      <body>
+        <div className="flex items-center w-full bg-neutral-100">
+          <Sidebar />
+          {children}
+        </div>
       </body>
     </html>
   );

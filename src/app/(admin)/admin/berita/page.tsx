@@ -1,5 +1,5 @@
 "use client";
-
+import Breadcrumb from "@/components/atoms/breadcrumb";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -189,7 +189,8 @@ export default function ManageBerita() {
   }, []);
 
   return (
-    <div className="flex-1 p-4 sm:ml-72 sm:mr-10 my-10 rounded-lg bg-white">
+    <div className="flex-1 p-4 sm:ml-72 sm:mr-10 my-10 rounded-lg bg-white h-screen">
+      <Breadcrumb />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Kelola Berita</h1>
         <button

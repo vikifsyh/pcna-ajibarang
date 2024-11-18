@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-
-import mime from "mime";
 import { join } from "path";
-import { stat, mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, stat } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-import _ from "lodash";
+import mime from "mime";
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 
@@ -16,7 +14,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Fungsi POST untuk menangani upload file
+const UPLOAD_DIR = join(process.cwd(), "uploads"); // Direktori penyimpanan file lokal
+
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const name = (formData.get("name") as string) || null;
@@ -26,41 +25,76 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "File is required." }, { status: 400 });
   }
 
-  // Mengubah file menjadi buffer untuk diupload ke Cloudinary
-  const buffer = Buffer.from(await file.arrayBuffer());
+  // Tentukan tipe MIME file
+  const fileType = mime.getType(file.name) || "application/octet-stream";
 
-  // Fungsi untuk mengupload ke Cloudinary
-  const uploadStream = () =>
-    new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { resource_type: "auto" }, // 'auto' akan menangani berbagai jenis file (gambar, PDF, dll)
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
+  if (fileType === "application/pdf") {
+    try {
+      // Pastikan direktori upload tersedia
+      try {
+        await stat(UPLOAD_DIR);
+      } catch {
+        await mkdir(UPLOAD_DIR, { recursive: true });
+      }
+
+      const filePath = join(UPLOAD_DIR, file.name);
+      const buffer = Buffer.from(await file.arrayBuffer());
+
+      // Simpan file PDF ke lokal
+      await writeFile(filePath, buffer);
+
+      // Simpan informasi file ke database
+      const createdFile = await prisma.download.create({
+        data: {
+          file: filePath, // Path lokal
+          name,
+        },
+      });
+
+      return NextResponse.json({ file: createdFile });
+    } catch (e) {
+      console.error("Error while saving PDF locally:", e);
+      return NextResponse.json(
+        { error: "Failed to save PDF file locally." },
+        { status: 500 }
       );
-      streamifier.createReadStream(buffer).pipe(stream);
-    });
+    }
+  } else {
+    // Jika bukan PDF, upload ke Cloudinary
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  try {
-    const result = (await uploadStream()) as any;
-    const fileUrl = result.secure_url; // Mendapatkan URL aman dari Cloudinary
+    const uploadStream = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "auto" },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        streamifier.createReadStream(buffer).pipe(stream);
+      });
 
-    // Simpan URL file dan nama ke database
-    const createdFile = await prisma.download.create({
-      data: {
-        file: fileUrl,
-        name,
-      },
-    });
+    try {
+      const result = (await uploadStream()) as any;
+      const fileUrl = result.secure_url;
 
-    return NextResponse.json({ file: createdFile });
-  } catch (e) {
-    console.error("Error while uploading to Cloudinary:", e);
-    return NextResponse.json(
-      { error: "Something went wrong while uploading the file." },
-      { status: 500 }
-    );
+      // Simpan URL file dan nama ke database
+      const createdFile = await prisma.download.create({
+        data: {
+          file: fileUrl, // URL Cloudinary
+          name,
+        },
+      });
+
+      return NextResponse.json({ file: createdFile });
+    } catch (e) {
+      console.error("Error while uploading to Cloudinary:", e);
+      return NextResponse.json(
+        { error: "Failed to upload file to Cloudinary." },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -93,6 +127,62 @@ export async function GET(req: NextRequest) {
     console.error("Error while trying to fetch downloads\n", e);
     return NextResponse.json(
       { error: "Something went wrong." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "ID is required." }, { status: 400 });
+  }
+
+  try {
+    // Cari data berdasarkan ID di database
+    const fileRecord = await prisma.download.findUnique({
+      where: { id },
+    });
+
+    if (!fileRecord) {
+      return NextResponse.json({ error: "File not found." }, { status: 404 });
+    }
+
+    // Pengecekan jika fileRecord.file tidak ada atau null
+    if (!fileRecord.file) {
+      return NextResponse.json(
+        { error: "File URL is missing in the record." },
+        { status: 400 }
+      );
+    }
+
+    // Ambil public_id dari Cloudinary yang ada di database
+    const filePublicId = fileRecord.file.split("/").pop()?.split(".")[0]; // Ambil public_id dari URL
+
+    if (filePublicId) {
+      // Hapus file dari Cloudinary
+      await cloudinary.uploader.destroy(filePublicId);
+
+      // Hapus data dari database
+      await prisma.download.delete({
+        where: { id },
+      });
+
+      return NextResponse.json({
+        message: "File and record deleted successfully.",
+      });
+    } else {
+      return NextResponse.json(
+        { error: "Invalid file format or missing public_id." },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error("Error while deleting the file:", error);
+    return NextResponse.json(
+      { error: "Failed to delete the file." },
       { status: 500 }
     );
   }
