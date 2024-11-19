@@ -71,10 +71,10 @@ export default function Navbar() {
             className={`px-4 py-3 inline-flex rounded-[3px] text-primary-500 hover:text-primary-500/80 hover:bg-primary-500/40 transition duration-200 ease-in ${
               pathname === "/unduhan" ? " bg-primary-500/20" : ""
             }`}
-            href="/unduhan"
+            href="/dokumen"
           >
             <ArrowDownOnSquareIcon className="w-5 h-5 mr-3 text-primary-500" />
-            Unduhan
+            Dokumen
           </Link>
           <Link
             className={`px-4 py-3 inline-flex rounded-[3px] text-primary-500 hover:text-primary-500/80 hover:bg-primary-500/40 transition duration-200 ease-in ${
@@ -143,11 +143,11 @@ export default function Navbar() {
               </li>
               <li>
                 <Link
-                  href="/unduhan"
+                  href="/dokumen"
                   className="px-3 py-2 w-full inline-flex rounded-[3px] text-green-500 hover:text-green-500/80 hover:bg-green-500/40 transition duration-200 ease-in"
                 >
                   <ArrowDownOnSquareIcon className="w-5 h-5 text-green-500 mr-3" />
-                  Unduhan
+                  Dokumen
                 </Link>
               </li>
               <li>
