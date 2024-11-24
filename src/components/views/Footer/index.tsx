@@ -21,9 +21,10 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row md:justify-between mt-[42px]">
             <div className="max-w-xl">
               <p className="text-lg">
-                Penjelasan garis besar apa itu PCNA Ajibarang Penjelasan garis
-                besar apa itu PCNA Ajibarang Penjelasan garis besar apa itu PCNA
-                Ajibarang bjasnaksma,smoasjiasuiajsnamslaksm
+                PCNA Ajibarang (Pimpinan Cabang Nasyiatul ‘Aisyiyah) adalah
+                wadah untuk pemberdayaan perempuan yang merupakan otonom
+                Muhammadiyah yang bergerak di bidang keagamaan, kemasyarakatan,
+                dan keperempuanan.
               </p>
             </div>
             <div className="max-w-sm md:mt-0 mt-4">
@@ -37,7 +38,7 @@ export default function Footer() {
               </p>
               <div className="mt-4">
                 <h2 className="text-lg font-semibold">Social Media</h2>
-                <div className="flex items-center justify-center gap-3 mt-1">
+                <div className="flex items-center justify-center md:justify-start gap-3 mt-1">
                   <FaTiktok className="size-6" />
                   <RiInstagramFill className="size-6" />
                   <FaXTwitter className="size-6" />

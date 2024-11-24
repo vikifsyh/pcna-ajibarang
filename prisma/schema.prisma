@@ -13,11 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
 model Admin {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
+    id       Int    @id @default(autoincrement())
+    name     String
+    email    String @unique
+    password String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    role      Role     @default(ADMIN)
 }
 
 model Article {
@@ -36,6 +43,21 @@ model Download {
     createdAt       DateTime  @default(now())
     updatedAt       DateTime  @updatedAt
 }
+
+model ProgramKerja {
+  id        Int        @id @default(autoincrement())
+  title     String
+  contents  Content[]  // Relasi dengan tabel Content
+}
+
+model Content {
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  programKerja  ProgramKerja @relation(fields: [programKerjaId], references: [id])
+  programKerjaId Int
+}
+
 
 
 

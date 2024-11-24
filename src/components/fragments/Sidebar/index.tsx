@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -21,6 +22,10 @@ export default function Sidebar() {
 
   const closeSidebar = () => {
     setIsOpen(false);
+  };
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -49,7 +54,6 @@ export default function Sidebar() {
         aria-label="Sidebar"
       >
         <div className="flex flex-col h-full rounded-md px-3 py-4 overflow-y-auto bg-white">
-          {/* Bagian atas (Navigasi) */}
           <ul className="space-y-2 font-medium">
             <li>
               <Link
@@ -103,9 +107,11 @@ export default function Sidebar() {
             </li>
           </ul>
 
-          {/* Bagian bawah (Logout) */}
           <div className="mt-auto">
-            <button className="flex items-center p-2 w-full text-red-600 rounded-lg hover:bg-red-100 transition">
+            <button
+              onClick={handleLogout}
+              className="flex items-center p-2 w-full text-red-600 rounded-lg hover:bg-red-100 transition"
+            >
               <ArrowLeftOnRectangleIcon className="w-5 h-5" />
               <span className="ms-3">Logout</span>
             </button>

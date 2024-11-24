@@ -1,13 +1,17 @@
 import HeroSection from "@/components/views/Hero";
-import Program from "@/components/views/Program";
+import Structure from "@/components/views/Structure";
 import VisiMisi from "@/components/views/VisiMisi";
+import ClickToAccess from "@/components/views/CTA";
+import Program from "@/components/views/Program";
 
 export default function page() {
   return (
     <>
       <HeroSection />
-      <VisiMisi />
       <Program />
+      <VisiMisi />
+      <Structure />
+      <ClickToAccess />
     </>
   );
 }

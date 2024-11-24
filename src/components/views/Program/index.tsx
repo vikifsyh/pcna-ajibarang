@@ -1,41 +1,99 @@
-import Image from "next/image";
+import {
+  ArrowRightIcon,
+  BookOpenIcon,
+  ChatBubbleLeftRightIcon,
+  CommandLineIcon,
+  HeartIcon,
+  IdentificationIcon,
+  MegaphoneIcon,
+  PresentationChartBarIcon,
+} from "@heroicons/react/20/solid";
 import React from "react";
-import PCNA from "../../../../public/image/Frame 22.png";
-import CTA from "../../../../public/image/file (6) 1.png";
+
+const programs = [
+  {
+    id: 1,
+    title: "Pendidikan",
+    icon: <BookOpenIcon className="w-10 h-10" />,
+  },
+  {
+    id: 2,
+    title: "Ekonomi",
+    icon: <PresentationChartBarIcon className="w-10 h-10" />,
+  },
+  {
+    id: 3,
+    title: "Dakwah",
+    icon: <MegaphoneIcon className="w-10 h-10" />,
+  },
+  {
+    id: 4,
+    title: "Organisasi",
+    icon: <ChatBubbleLeftRightIcon className="w-10 h-10" />,
+  },
+  {
+    id: 5,
+    title: "Kesehatan",
+    icon: <HeartIcon className="w-10 h-10" />,
+  },
+  {
+    id: 6,
+    title: "Perkaderan",
+    icon: <IdentificationIcon className="w-10 h-10" />,
+  },
+  {
+    id: 7,
+    title: "Pusindi",
+    icon: <CommandLineIcon className="w-10 h-10" />,
+  },
+];
 
 export default function Program() {
   return (
-    <>
-      <div className="relative md:flex gap-14 bg-primary mt-16 md:mt-[110px] pb-6 md:pb-0 mb-10 md:mb-[70px]">
-        <Image src={PCNA} alt="PCNA Ajibarang" />
-        <div className="md:text-[42px] text-2xl font-semibold mt-[42px]  text-center md:text-left">
-          <h2 className="text-white text-center ">NASYIATUL AISIYAH</h2>
-          <h2 className="text-secondary max-w-[355px]">
-            Perempuan Muda Berkemajuan
-          </h2>
+    <div className="bg-primary">
+      <div className="mx-5 md:mx-20 py-20">
+        <div className="text-center">
+          <h1 className="text-white text-3xl font-bold mb-2">Program Kerja</h1>
+          <p className="text-white mb-10">
+            Bersama kembangkan potensi perempuan muda berlandaskan nilai-nilai
+            Islam
+          </p>
+        </div>
+        {/* Baris pertama: Card 1, 2, 3, 4 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {programs.slice(0, 4).map((program) => (
+            <div
+              key={program.id}
+              className="bg-white rounded-lg shadow-md text-center p-6"
+            >
+              <div className="text-secondary-100 text-4xl mb-4 flex justify-center">
+                {program.icon}
+              </div>
+              <h2 className=" text-xl font-semibold mb-4">{program.title}</h2>
+              <button className="bg-secondary-100  py-2 px-4 inline-flex rounded-full hover:bg-secondary-100/50">
+                Lihat Program <ArrowRightIcon className="w-6 h-6" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Baris kedua: Card 5, 6, 7 (tengah) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          {programs.slice(4).map((program) => (
+            <div key={program.id} className="">
+              <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                <div className="text-secondary-100 text-4xl mb-4 flex justify-center">
+                  {program.icon}
+                </div>
+                <h2 className=" text-xl font-semibold mb-4">{program.title}</h2>
+                <button className="bg-secondary-100 inline-flex  py-2 px-4 rounded-full hover:bg-secondary-100/50">
+                  Lihat Program <ArrowRightIcon className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="relative flex justify-between mx-5 md:mx-[75px] bg-primary px-1 py-6 rounded-3xl my-10 md:bottom-10 md:mt-0">
-        <div className="md:pl-[138px] md:py-[52px] px-10 md:text-left text-center">
-          <h2 className="text-2xl md:text-[42px] font-semibold text-white max-w-xl leading-tight">
-            Perempuan Bersatu Wujudkan Kemajuan
-          </h2>
-          <h2 className="text-lg text-white mt-5">
-            Hubungi kami untuk informasi seputar PCNA Ajibarang
-          </h2>
-          <div className="flex items-center gap-2 md:gap-4 mt-5">
-            <button className="px-3 md:px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
-              Hubungi Kami
-            </button>
-            <button className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
-              Daftar KTAN
-            </button>
-          </div>
-        </div>
-        <div className="absolute right-0 bottom-0">
-          <Image src={CTA} alt="PCNA Ajibarang" className="hidden md:block" />
-        </div>
-      </div>
-    </>
+    </div>
   );
 }

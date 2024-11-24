@@ -49,13 +49,13 @@ export default function HeroSection() {
         <div className="flex flex-wrap justify-center md:mt-12 mt-6 space-x-2 space-y-2 md:space-y-0">
           <div className="flex w-full md:w-auto justify-center space-x-1 md:space-x-2">
             <button className="bg-secondary font-semibold px-4 md:py-4 py-2  md:text-base text-xs rounded-md">
-              Sejarah
+              Program Kerja
+            </button>
+            <button className="bg-secondary font-semibold px-4 md:py-4 py-2 md:text-base text-xs rounded-md">
+              Visi & Misi
             </button>
             <button className="bg-secondary font-semibold px-4 md:py-4 py-2 md:text-base text-xs rounded-md">
               Struktur Pengurus
-            </button>
-            <button className="bg-secondary font-semibold px-4 md:py-4 py-2 md:text-base text-xs rounded-md">
-              Kegiatan
             </button>
           </div>
           <div className="flex w-full md:w-auto justify-center space-x-2 mt-2 md:mt-0">
@@ -64,9 +64,6 @@ export default function HeroSection() {
             </button>
             <button className="bg-secondary font-semibold px-4 md:py-4 py-2 md:text-base text-xs rounded-md">
               Perkaderan
-            </button>
-            <button className="bg-secondary font-semibold px-4 md:py-4 py-2 md:text-base text-xs rounded-md">
-              Pusat Informasi
             </button>
           </div>
         </div>

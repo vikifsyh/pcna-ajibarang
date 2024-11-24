@@ -69,7 +69,7 @@ export default function Navbar() {
           </Link>
           <Link
             className={`px-4 py-3 inline-flex rounded-[3px] text-primary-500 hover:text-primary-500/80 hover:bg-primary-500/40 transition duration-200 ease-in ${
-              pathname === "/unduhan" ? " bg-primary-500/20" : ""
+              pathname === "/dokumen" ? " bg-primary-500/20" : ""
             }`}
             href="/dokumen"
           >

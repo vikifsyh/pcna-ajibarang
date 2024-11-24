@@ -1,5 +1,8 @@
 "use client";
 import Breadcrumb from "@/components/atoms/breadcrumb";
+import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +15,8 @@ interface DownloadItem {
 }
 
 export default function ManageUnduhan() {
+  const router = useRouter(); // Inisialisasi useRouter
+  const { data: session, status } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [name, setName] = useState("");
@@ -174,11 +179,19 @@ export default function ManageUnduhan() {
   };
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/masuk");
+    }
     fetchDownloads();
-  }, []);
+  }, [status, router]);
 
   return (
     <div className="flex-1 p-4 sm:ml-[270px] sm:mr-10 my-10 rounded-lg bg-white h-screen">
+      <div className="my-4">
+        <p className="text-xl font-semibold">
+          Selamat datang, {session?.user?.name || "User"}! 👋
+        </p>
+      </div>
       <Breadcrumb />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Kelola Dokumen</h1>
@@ -244,40 +257,24 @@ export default function ManageUnduhan() {
               {isEditMode ? "Edit Unduhan" : "Tambah Unduhan"}
             </h2>
             <form onSubmit={isEditMode ? handleUpdate : handleSubmit}>
-              <div className="mb-4">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  Nama Unduhan
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="file"
-                  className="block text-sm font-medium text-gray-600"
-                >
-                  File
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  onChange={handleFileChange}
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
+              <label className="block mb-2">Nama Dokumen</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <label className="block mt-4 mb-2">Pilih File</label>
+              <input
+                type="file"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                onChange={handleFileChange}
+              />
+              <div className="mt-4 flex justify-between">
                 <button
                   type="button"
                   onClick={toggleModal}
-                  className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg"
                 >
                   Batal
                 </button>
@@ -285,39 +282,36 @@ export default function ManageUnduhan() {
                   type="submit"
                   className="px-4 py-2 bg-primary text-white rounded-lg"
                 >
-                  {isEditMode ? "Perbarui" : "Simpan"}
+                  {isEditMode ? "Perbarui" : "Tambah"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* Modal Delete Confirmation */}
+      {/* Modal Confirm Delete */}
       {isConfirmDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">
-              Apakah Anda yakin ingin menghapus dokumen ini?
-            </h3>
-            <div className="flex justify-between">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h2>
+            <p>Apakah Anda yakin ingin menghapus dokumen ini?</p>
+            <div className="mt-4 flex justify-between">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+              >
+                Batal
+              </button>
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg"
               >
-                Ya
-              </button>
-              <button
-                onClick={cancelDelete}
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg"
-              >
-                Tidak
+                Hapus
               </button>
             </div>
           </div>
         </div>
       )}
-
       <ToastContainer />
     </div>
   );

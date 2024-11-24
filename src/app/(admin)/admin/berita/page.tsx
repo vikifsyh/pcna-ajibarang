@@ -1,6 +1,8 @@
 "use client";
 import Breadcrumb from "@/components/atoms/breadcrumb";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter untuk redirect
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,6 +15,8 @@ interface Article {
 }
 
 export default function ManageBerita() {
+  const { data: session, status } = useSession();
+  const router = useRouter(); // Inisialisasi useRouter
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [title, setTitle] = useState("");
@@ -185,11 +189,26 @@ export default function ManageBerita() {
   };
 
   useEffect(() => {
+    // Redirect ke halaman login jika belum login
+    if (status === "unauthenticated") {
+      router.push("/masuk");
+    }
     fetchArticles();
-  }, []);
+  }, [status, router]); // Tambahkan router di sini
 
   return (
     <div className="flex-1 p-4 sm:ml-72 sm:mr-10 my-10 rounded-lg bg-white h-screen">
+      <div className="my-4">
+        {status === "loading" ? (
+          <p>Loading...</p>
+        ) : session ? (
+          <p className="text-xl font-semibold">
+            Selamat datang, {session.user?.name || "User"}! 👋
+          </p>
+        ) : (
+          <p>Please log in.</p>
+        )}
+      </div>
       <Breadcrumb />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">Kelola Berita</h1>
@@ -242,8 +261,8 @@ export default function ManageBerita() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-4 py-2 text-center">
-                    Tidak ada data berita.
+                  <td colSpan={3} className="text-center py-4">
+                    Belum ada berita.
                   </td>
                 </tr>
               )}
@@ -252,73 +271,61 @@ export default function ManageBerita() {
         )}
       </div>
 
-      {/* Add or Edit Article Modal */}
+      {/* Modal untuk tambah dan edit berita */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-xl font-semibold mb-4">
               {isEditMode ? "Edit Berita" : "Tambah Berita"}
             </h2>
             <form onSubmit={isEditMode ? handleUpdate : handleSubmit}>
               <div className="mb-4">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label className="block text-sm font-medium text-gray-700">
                   Judul
                 </label>
                 <input
                   type="text"
-                  id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md"
                   required
+                  className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
                 />
               </div>
               <div className="mb-4">
-                <label
-                  htmlFor="content"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label className="block text-sm font-medium text-gray-700">
                   Konten
                 </label>
                 <textarea
-                  id="content"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="mt-1 p-2 w-full border rounded-md"
-                  rows={4}
                   required
+                  rows={4}
+                  className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
                 />
               </div>
               <div className="mb-4">
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label className="block text-sm font-medium text-gray-700">
                   Gambar
                 </label>
                 <input
                   type="file"
-                  id="image"
                   onChange={handleFileChange}
-                  className="mt-1 p-2 w-full border rounded-md"
+                  className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2"
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-between">
                 <button
                   type="button"
                   onClick={toggleModal}
-                  className="px-4 py-2 bg-gray-300 rounded-md mr-2"
+                  className="bg-gray-300 text-black px-4 py-2 rounded-md"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary text-white rounded-md"
+                  className="bg-primary text-white px-4 py-2 rounded-md"
                 >
-                  {isEditMode ? "Update" : "Tambah"}
+                  {isEditMode ? "Perbarui" : "Tambah"}
                 </button>
               </div>
             </form>
@@ -326,23 +333,23 @@ export default function ManageBerita() {
         </div>
       )}
 
-      {/* Confirm Delete Modal */}
+      {/* Modal konfirmasi hapus */}
       {isConfirmDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">
-              Yakin ingin menghapus berita ini?
-            </h3>
-            <div className="flex justify-end space-x-2">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">
+              Apakah Anda yakin ingin menghapus berita ini?
+            </h2>
+            <div className="flex justify-between">
               <button
                 onClick={cancelDelete}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md"
+                className="bg-gray-300 text-black px-4 py-2 rounded-md"
               >
                 Batal
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md"
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
               >
                 Hapus
               </button>
@@ -350,6 +357,7 @@ export default function ManageBerita() {
           </div>
         </div>
       )}
+
       <ToastContainer />
     </div>
   );
