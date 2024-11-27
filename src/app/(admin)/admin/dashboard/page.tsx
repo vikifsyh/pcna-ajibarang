@@ -15,14 +15,22 @@ interface Article {
   content: string;
 }
 
+interface Program {
+  id: string;
+  name: string;
+  content: string;
+}
+
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const [files, setFiles] = useState<File[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
     fetchFiles();
     fetchArticles();
+    fetchPrograms(); 
   }, []);
 
   const fetchFiles = async () => {
@@ -53,6 +61,20 @@ export default function Dashboard() {
     }
   };
 
+  const fetchPrograms = async () => {
+    try {
+      const response = await fetch("/api/program");
+      const data = await response.json();
+      if (response.ok) {
+        setPrograms(data.programs || []);
+      } else {
+        console.error("Error:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching programs:", error);
+    }
+  };
+
   return (
     <main className="flex-1 p-4 sm:ml-72 sm:mr-10 my-10 rounded-lg bg-white h-screen">
       <div className="my-4">
@@ -78,6 +100,12 @@ export default function Dashboard() {
         <div className="bg-primary/40 p-4 rounded-lg text-center text-white">
           <p className="text-lg font-semibold">Jumlah Artikel</p>
           <p className="text-2xl">{articles.length}</p>
+        </div>
+
+        {/* Menampilkan jumlah program */}
+        <div className="bg-primary/40 p-4 rounded-lg text-center text-white">
+          <p className="text-lg font-semibold">Jumlah Program</p>
+          <p className="text-2xl">{programs.length}</p>
         </div>
       </div>
     </main>

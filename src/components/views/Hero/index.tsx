@@ -36,7 +36,7 @@ export default function HeroSection() {
                 onClick={() => router.push("https://nasyiah.or.id/Ktna")}
                 className="px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
               >
-                Daftar KTAN
+                Daftar KTNA
               </button>
             </div>
           </div>

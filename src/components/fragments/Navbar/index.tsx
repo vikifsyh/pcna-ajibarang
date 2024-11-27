@@ -101,7 +101,7 @@ export default function Navbar() {
             href={"https://nasyiah.or.id/Ktna"}
           >
             <UserPlusIcon className="w-5 h-5 text-primary-500 mr-3" />
-            Daftar KTAN
+            Daftar KTNA
           </Link>
         </div>
         <div className="flex lg:hidden items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -174,7 +174,7 @@ export default function Navbar() {
                   className="px-3 py-2 w-full inline-flex rounded-[3px] text-green-500 hover:text-green-500/80 hover:bg-green-500/40 transition duration-200 ease-in"
                 >
                   <UserPlusIcon className="w-5 h-5 text-green-500 mr-3" />
-                  Daftar KTAN
+                  Daftar KTNA
                 </Link>
               </li>
             </ul>

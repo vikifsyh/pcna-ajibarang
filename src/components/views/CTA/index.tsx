@@ -40,7 +40,7 @@ export default function ClickToAccess() {
               Hubungi Kami
             </button>
             <button className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
-              Daftar KTAN
+              Daftar KTNA
             </button>
           </div>
         </div>

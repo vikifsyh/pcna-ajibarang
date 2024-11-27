@@ -45,18 +45,14 @@ model Download {
 }
 
 model ProgramKerja {
-  id        Int        @id @default(autoincrement())
-  title     String
-  contents  Content[]  // Relasi dengan tabel Content
+  id              String        @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  title           String?   @db.Text
+  content         String?   @db.Text
+  image           String?   @db.Text
 }
 
-model Content {
-  id            Int       @id @default(autoincrement())
-  title         String
-  description   String
-  programKerja  ProgramKerja @relation(fields: [programKerjaId], references: [id])
-  programKerjaId Int
-}
 
 
 
