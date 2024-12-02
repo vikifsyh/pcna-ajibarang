@@ -29,8 +29,11 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-2 md:space-y-0">
-              <button className="px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
-                Lihat Agenda
+              <button
+                onClick={() => router.push("/program")}
+                className="px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
+              >
+                Lihat Program
               </button>
               <button
                 onClick={() => router.push("https://nasyiah.or.id/Ktna")}

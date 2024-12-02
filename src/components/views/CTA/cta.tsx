@@ -1,6 +1,7 @@
 import React from "react";
 import ImageCTA from "../../../../public/image/Frame 161.png";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function CTA() {
   return (
@@ -26,12 +27,18 @@ export default function CTA() {
           </svg>
         </div>
         <div className="flex items-center md:justify-start justify-center gap-2 md:gap-4 mt-5">
-          <button className="px-3 md:px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
+          <Link
+            href="https://wa.me/6281231272092"
+            className="px-3 md:px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
+          >
             Hubungi Kami
-          </button>
-          <button className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
+          </Link>
+          <Link
+            href={"https://nasyiah.or.id/Ktna"}
+            className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
+          >
             Daftar KTNA
-          </button>
+          </Link>
         </div>
       </div>
     </div>

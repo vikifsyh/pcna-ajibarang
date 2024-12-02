@@ -107,11 +107,14 @@ export default function ProgramTerlaksana() {
           Telusuri Program Terlaksana PCNA Ajibarang.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 md:mt-16">
+      <div className="mt-10 md:mt-16">
         {programs.length > 0 ? (
-          <ul className="max-w-sm bg-white border border-gray-200 rounded-lg flex flex-col">
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {programs.map((program) => (
-              <li key={program.id}>
+              <li
+                key={program.id}
+                className="border border-neutral-50 rounded-lg"
+              >
                 <div className="w-full h-[240px] relative">
                   <Image
                     className="rounded-t-lg object-cover"
@@ -126,7 +129,7 @@ export default function ProgramTerlaksana() {
                   <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 mt-4">
                     {program.title}
                   </h5>
-                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
+                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                     {program.content}
                   </p>
                 </div>

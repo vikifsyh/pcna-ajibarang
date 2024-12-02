@@ -1,3 +1,4 @@
+"use client";
 import {
   ArrowRightIcon,
   BookOpenIcon,
@@ -8,6 +9,7 @@ import {
   MegaphoneIcon,
   PresentationChartBarIcon,
 } from "@heroicons/react/20/solid";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const programs = [
@@ -49,6 +51,7 @@ const programs = [
 ];
 
 export default function Program() {
+  const router = useRouter();
   return (
     <div className="bg-primary">
       <div className="mx-5 md:mx-20 py-20">
@@ -70,7 +73,10 @@ export default function Program() {
                 {program.icon}
               </div>
               <h2 className=" text-xl font-semibold mb-4">{program.title}</h2>
-              <button className="bg-secondary-100  py-2 px-4 inline-flex rounded-full hover:bg-secondary-100/50">
+              <button
+                onClick={() => router.push("/program")}
+                className="bg-secondary-100  py-2 px-4 inline-flex rounded-full hover:bg-secondary-100/50"
+              >
                 Lihat Program <ArrowRightIcon className="w-6 h-6" />
               </button>
             </div>

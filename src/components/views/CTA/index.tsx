@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import PCNA from "../../../../public/image/Frame 22.png";
 import CTA from "../../../../public/image/file (6) 1.png";
+import Link from "next/link";
 
 export default function ClickToAccess() {
   return (
@@ -36,12 +37,18 @@ export default function ClickToAccess() {
             Hubungi kami untuk informasi seputar PCNA Ajibarang
           </h2>
           <div className="flex items-center gap-2 md:gap-4 mt-5">
-            <button className="px-3 md:px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
+            <Link
+              href="https://wa.me/6281231272092"
+              className="px-3 md:px-4 py-[6px] bg-secondary text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
+            >
               Hubungi Kami
-            </button>
-            <button className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300">
+            </Link>
+            <Link
+              href={"https://nasyiah.or.id/Ktna"}
+              className="px-3 md:px-4 py-[6px] bg-neutral text-black font-semibold rounded-md hover:bg-secondary-100 transition duration-300"
+            >
               Daftar KTNA
-            </button>
+            </Link>
           </div>
         </div>
         <div className="absolute right-0 bottom-0">
