@@ -7,7 +7,7 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className="bg-white">
         <Navbar />
         {children}

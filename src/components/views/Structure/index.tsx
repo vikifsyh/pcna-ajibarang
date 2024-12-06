@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Structure() {
   return (
-    <div className="mx-5 md:mx-20 my-14 md:my-[100px]">
+    <div id="struktur" className="mx-5 md:mx-20 my-14 md:my-[100px]">
       <h1 className="md:text-[42px] text-2xl text-center font-bold">
         Struktur Pengurus
       </h1>
@@ -88,7 +88,7 @@ export default function Structure() {
               Sekretaris 2
             </td>
             <td className="border border-primary p-2 bg-secondary">
-              Dewinda Nur Azizah, S.Psi
+              Dwinda Nur Azizah, S.Psi
             </td>
           </tr>
           <tr className="font-semibold">
@@ -224,7 +224,7 @@ export default function Structure() {
           <tr className="bg-[#D9D9D9]">
             <td className="border border-primary p-2 font-medium">Ketua</td>
             <td className="border border-primary p-2 bg-secondary">
-              Yunestu Mahardika Putri, S.Pd
+              Yunestu Mahardika Putri, S.P
             </td>
           </tr>
           <tr className="bg-[#D9D9D9]">

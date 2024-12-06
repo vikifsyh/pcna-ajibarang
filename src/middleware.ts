@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const ADMIN_PATHS = ["/admin", "/admin/:path*", "/api"];
-const AUTH_PATHS = ["/login", "/register"];
+const AUTH_PATHS = ["/masuk", "/daftar"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -30,7 +30,7 @@ export const config = {
   matcher: [
     "/admin/:path*", // Semua halaman di bawah /admin
     "/api/:path*", // Semua API khusus admin
-    "/login", // Halaman login
+    "/masuk", // Halaman login
     "/register", // Halaman register
   ],
 };

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function VisiMisi() {
   return (
-    <>
+    <section id="visimisi">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between bg-gradient-to-l from-[#01A54D] to-white px-5 py-10 lg:px-20 lg:py-[113px]">
         <div>
           <h1 className="md:text-5xl text-2xl font-bold text-black text-center">
@@ -60,6 +60,6 @@ export default function VisiMisi() {
           </p>
         </div>
       </div>
-    </>
+    </section>
   );
 }
