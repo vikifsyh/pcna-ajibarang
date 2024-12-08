@@ -6,6 +6,7 @@ import { IoLogoWhatsapp } from "react-icons/io";
 import { FaTiktok } from "react-icons/fa";
 import { RiInstagramFill } from "react-icons/ri";
 import { FaXTwitter } from "react-icons/fa6";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -39,8 +40,20 @@ export default function Footer() {
               <div className="mt-4">
                 <h2 className="text-lg font-semibold">Social Media</h2>
                 <div className="flex items-center justify-center md:justify-start gap-3 mt-1">
-                  <FaTiktok className="size-6" />
-                  <RiInstagramFill className="size-6" />
+                  <Link
+                    href={
+                      "https://www.tiktok.com/@pcnaajibarang?_t=8s2tnq0CQNw&_r=1"
+                    }
+                  >
+                    <FaTiktok className="size-6" />
+                  </Link>
+                  <Link
+                    href={
+                      "https://www.instagram.com/pcnaajibarang?igsh=aTBod21tNjFyMXU5"
+                    }
+                  >
+                    <RiInstagramFill className="size-6" />
+                  </Link>
                   <FaXTwitter className="size-6" />
                 </div>
               </div>
